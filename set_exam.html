@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz System</title>
+</head>
+<body>
+
+    <div id="teacherContainer">
+        <h2>Teacher Interface</h2>
+        <label>Question: <input type="text" id="questionText"></label>
+        <label>Type: 
+            <select id="questionType" onchange="toggleOptions()">
+                <option value="MCQ">MCQ</option>
+                <option value="MSQ">MSQ</option>
+                <option value="TEXT">Text</option>
+            </select>
+        </label>
+        <div id="optionsContainer"></div>
+        <button onclick="addOption()">Add Option</button>
+        <button onclick="addQuestion()">Add Question</button>
+    </div>
+    <script>
+        let questions = [];
+        let currentIndex = 0;
+        let answers = {};
+
+        function toggleOptions() {
+            let type = document.getElementById("questionType").value;
+            let container = document.getElementById("optionsContainer");
+            container.innerHTML = "";
+            if (type === "MCQ" || type === "MSQ") {
+                addOption();
+            }
+        }
+
+        function addOption() {
+            let container = document.getElementById("optionsContainer");
+            let input = document.createElement("input");
+            input.type = "text";
+            input.placeholder = "Option";
+            container.appendChild(input);
+            container.appendChild(document.createElement("br"));
+        }
+
+        function addQuestion() {
+            let text = document.getElementById("questionText").value.trim();
+            let type = document.getElementById("questionType").value;
+            let options = Array.from(document.getElementById("optionsContainer").getElementsByTagName("input"))
+                              .map(input => input.value.trim())
+                              .filter(opt => opt !== "");
+
+            if (text === "") {
+                alert("Please enter a question before adding.");
+                return;
+            }
+
+            if ((type === "MCQ" || type === "MSQ") && options.length === 0) {
+                alert("Please add at least one option.");
+                return;
+            }
+
+            questions.push({ text, type, options });
+            document.getElementById("questionText").value = "";
+            document.getElementById("optionsContainer").innerHTML = "";
+            alert(`Question added! Total questions: ${questions.length}`);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Signup</title>
+  <style>
+    /* Import Google Font */
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+    /* RESET & BASE STYLES */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    /* SPLIT LAYOUT */
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+    }
+    .split-container {
+      display: flex;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* LEFT PANEL (Single purple color, white text) */
+    .left-panel {
+      flex: 1;
+      background: linear-gradient(135deg, #7f5af0, #6246ea);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      color: #fff;
+      padding: 60px;
+    }
+    .left-panel h1 {
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+    .left-panel p {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      max-width: 400px;
+      opacity: 0.9;
+    }
+
+    /* RIGHT PANEL (Light background, black text) */
+    .right-panel {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #f7f7f7;
+      padding: 40px;
+    }
+
+    /* SIGNUP CONTAINER (Form box) */
+    .container {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 30px;
+      width: 350px;
+      text-align: center;
+      border-radius: 12px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Heading in black for right panel */
+    h2 {
+      margin-bottom: 20px;
+      color: #333;
+      font-weight: 600;
+    }
+
+    /* Inputs with black text */
+    input, select {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0;
+      border: none;
+      border-radius: 6px;
+      outline: none;
+      font-size: 16px;
+      background: rgba(255, 255, 255, 0.2);
+      color: #333;
+    }
+    input::placeholder {
+      color: rgba(0, 0, 0, 0.6);
+    }
+    select {
+      color: #333;
+      background: rgba(255, 255, 255, 0.2);
+    }
+    input:focus, select:focus {
+      background: rgba(110, 108, 108, 0.3);
+      transition: 0.3s ease-in-out;
+    }
+
+    /* Button styling */
+    button {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 6px;
+      background: #ff8c00;
+      color: white;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+      margin-top: 10px;
+    }
+    button:hover {
+      background: #ff7300;
+    }
+
+    /* Paragraphs in black for right panel */
+    p {
+      margin-top: 15px;
+      color: #333;
+      font-size: 14px;
+    }
+    p a {
+      color: #333;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    p a:hover {
+      text-decoration: underline;
+    }
+
+    /* Success/Error messages */
+    .error {
+      color: red;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+    .success {
+      color: green;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <!-- SPLIT CONTAINER -->
+  <div class="split-container">
+    <!-- LEFT PANEL (purple, white text) -->
+    <div class="left-panel">
+      <h1>SmartEval</h1>
+      <p>
+        Join us for a smarter way to evaluate exams, quizzes, and more.
+        <br /><br />
+        Secure, reliable, and easy to use — for both teachers and students.
+      </p>
+    </div>
+
+    <!-- RIGHT PANEL (light background, black text) -->
+    <div class="right-panel">
+      <div class="container" id="formContainer">
+        <h2>Create Account</h2>
+
+        <input type="text" id="name" placeholder="Full Name" required>
+        <input type="email" id="email" placeholder="Email ID (must end with @gmail.com)" required>
+        <input type="text" id="phone" placeholder="Phone No (10 digits)" required maxlength="10" minlength="10">
+        <input type="password" id="password" placeholder="Create Password" required>
+
+        <!-- Added role selection -->
+        <select id="role" required>
+          <option value="">Select Role</option>
+          <option value="student">Student</option>
+          <option value="teacher">Teacher</option>
+        </select>
+
+        <button onclick="signup()">Signup</button>
+        <p>Already have an account? <a href="login.html">Login</a></p>
+        <p id="message"></p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function signup() {
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const phone = document.getElementById("phone").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const role = document.getElementById("role").value;
+      const messageBox = document.getElementById("message");
+
+      // Check for empty fields
+      if (!name || !email || !phone || !password || !role) {
+        messageBox.innerHTML = "❌ All fields are required!";
+        messageBox.className = "error";
+        return;
+      }
+
+      // Validate email format (@gmail.com)
+      if (!email.endsWith("@gmail.com")) {
+        messageBox.innerHTML = "❌ Email must end with @gmail.com";
+        messageBox.className = "error";
+        return;
+      }
+
+      // Validate phone number length (10 digits)
+      const phoneRegex = /^\d{10}$/;
+      if (!phoneRegex.test(phone)) {
+        messageBox.innerHTML = "❌ Phone number must be exactly 10 digits.";
+        messageBox.className = "error";
+        return;
+      }
+
+      // Display success message and redirect
+      messageBox.innerHTML = `✅ Successfully created account as a <strong>${role}</strong>. Redirecting to login page...`;
+      messageBox.className = "success";
+
+      setTimeout(() => {
+        window.location.href = "login.html";
+      }, 2000);
+    }
+  </script>
+</body>
+</html>

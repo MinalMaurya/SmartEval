@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Dashboard</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        margin: 0;
+    }
+    
+    /* Header */
+    .header {
+        background: linear-gradient(135deg, #7f5af0, #6246ea);
+        color: white;
+        padding: 15px;
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .header button {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+    }
+    
+    .header button:hover {
+        text-decoration: underline;
+    }
+    
+    /* Layout */
+    .container {
+        display: flex;
+        flex-grow: 1;
+    }
+    
+    /* Sidebar */
+    .sidebar {
+        width: 250px;
+        background: linear-gradient(135deg, #7f5af0, #6246ea);
+        color: white;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        transition: all 0.3s ease-in-out;
+    }
+    
+    .sidebar button {
+        background: none;
+        border: none;
+        color: white;
+        text-align: left;
+        padding: 10px;
+        font-size: 16px;
+        cursor: pointer;
+        margin: 5px 0;
+        width: 100%;
+    }
+    
+    .sidebar button:hover {
+        background: linear-gradient(135deg, #7f5af0, #6246ea);
+    }
+    
+    /* Main Content */
+    .main-content {
+        flex-grow: 1;
+        padding: 20px;
+        background: #f4f4f4;
+    }
+    
+    /* Right Panel */
+    .right-panel {
+        width: 300px;
+        background: white;
+        padding: 15px;
+        border-left: 1px solid #ddd;
+        box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Profile Section */
+    .profile-section {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .profile-section img {
+        border-radius: 50%;
+        width: 100px;
+        height: 100px;
+    }
+    
+    .profile-info {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .profile-info input {
+        padding: 8px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        width: 100%;
+    }
+    
+    .edit-btn, .save-btn {
+        padding: 10px;
+        background: linear-gradient(135deg, #7f5af0, #6246ea);
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        width: 100px;
+        margin-top: 10px;
+    }
+    
+    .edit-btn:hover, .save-btn:hover {
+        background-color: #0056b3;
+    }
+    
+    .save-btn {
+        display: none;
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .container {
+            flex-direction: column;
+        }
+    
+        .sidebar {
+            width: 100%;
+            text-align: center;
+            padding: 10px;
+        }
+    
+        .sidebar button {
+            width: auto;
+        }
+    
+        .right-panel {
+            width: 100%;
+            border-left: none;
+            border-top: 1px solid #ddd;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .header {
+            grid-template-columns: 1fr auto;
+            text-align: center;
+        }
+    
+        .sidebar {
+            display: none; /* Hide sidebar on small screens */
+        }
+    
+        .right-panel {
+            padding: 10px;
+        }
+    }
+    
+    </style>
+    <script>
+        function showProfile() {
+            document.getElementById("mainContent").innerHTML = `
+                <div style="text-align: center;">
+                    <label for="profilePicUpload">
+                        <img id="profilePic" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSJ-MmMOugfFCDHRQ5x_daci-zQtAE2ml2edw&s" alt="photo" style="cursor: pointer; border-radius: 50%; width: 100px; height: 100px; object-fit: cover; border: 3px solid #ddd;">
+                    </label>
+                    <input type="file" id="profilePicUpload" accept="image/*" style="display: none;" onchange="uploadProfilePic(event)">
+                </div>
+    
+                <div class="profile-info">
+                    <label>Name:</label>
+                    <input type="text" id="name" value="John Doe" disabled>
+                    
+                    <label>Email:</label>
+                    <input type="email" id="email" value="johndoe@example.com" disabled>
+                    
+                    <label>Student ID:</label>
+                    <input type="text" id="studentID" value="S123456" disabled>
+                    
+                    <label>Phone No:</label>
+                    <input type="text" id="phone" value="9876543210" disabled>
+                    
+                    <label>Alternative Phone No:</label>
+                    <input type="text" id="altPhone" value="9123456789" disabled>
+                    
+                    <label>Class:</label>
+                    <input type="text" id="class" value="B.Tech Computer Science" disabled>
+                    
+                    <label>Division:</label>
+                    <input type="text" id="division" value="A" disabled>
+    
+                    <button class="edit-btn" onclick="editProfile()">📝 Edit</button>
+                    <button class="save-btn" onclick="saveProfile()">Save</button>
+                </div>
+            `;
+        }
+    
+        // Function to handle profile photo upload
+        function uploadProfilePic(event) {
+            let reader = new FileReader();
+            reader.onload = function () {
+                let output = document.getElementById("profilePic");
+                output.src = reader.result;
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        }
+
+    function editProfile() {
+        document.querySelectorAll(".profile-info input").forEach(input => {
+            input.removeAttribute("disabled");
+        });
+        document.querySelector(".edit-btn").style.display = "none";
+        document.querySelector(".save-btn").style.display = "inline-block";
+    }
+
+    function saveProfile() {
+        document.querySelectorAll(".profile-info input").forEach(input => {
+            input.setAttribute("disabled", "true");
+        });
+        document.querySelector(".edit-btn").style.display = "inline-block";
+        document.querySelector(".save-btn").style.display = "none";
+
+        alert("Profile updated successfully!");
+    }
+
+
+        function loadUpcomingExams() {
+          document.getElementById("mainContent").innerHTML = `
+              <h2>Set Exams</h2>
+              <button onclick="window.location.href='teacher.html'">Set New Exam</button>
+              <h3>Saved Exams</h3>
+              <div id="setExamsList"></div> <!-- Placeholder for set exams -->
+          `;
+          setTimeout(loadSetExams, 100); // Ensure the element is created before populating
+      }
+      function loadSetExams() {
+        let exams = JSON.parse(localStorage.getItem("setExams")) || [];
+        const examListDiv = document.getElementById("setExamsList");
+        examListDiv.innerHTML = "";
+    
+        if (exams.length === 0) {
+            examListDiv.innerHTML = "<p>No exams set yet.</p>";
+            return;
+        }
+    
+        exams.forEach((exam, index) => {
+            if (!exam.name || !exam.date || !exam.time) return;
+    
+            const examEntry = document.createElement("div");
+            examEntry.innerHTML = `
+                <strong>${exam.name}</strong> (Date: ${exam.date}, Time: ${exam.time})<br>
+                <button onclick="reviewExam(${index})">Review</button>
+                <button onclick="uploadExam(${index})">Upload</button>
+            `;
+            examListDiv.appendChild(examEntry);
+        });
+    }    
+    function uploadExam() {
+      if (questions.length === 0) {
+          alert("No questions to upload!");
+          return;
+      }
+  
+      let examData = {
+          examName: document.getElementById("examName").value.trim() || "Untitled Exam",
+          examDate: document.getElementById("examDate").value,
+          examTime: document.getElementById("examTime").value,
+          questions: questions
+      };
+  
+      localStorage.setItem("uploadedExam", JSON.stringify(examData));
+  
+      alert("Exam uploaded successfully!");
+  
+      // Reset everything after upload
+      questions = [];
+      questionCounter = 0;
+      document.getElementById("questionList").innerHTML = "";
+      document.getElementById("questionCount").innerText = "0";
+      closePreview();
+  }
+  function previewExam(index) {
+    let exams = JSON.parse(localStorage.getItem("setExams")) || [];
+    let exam = exams[index];
+
+    if (!exam) {
+        alert("Error: Exam not found!");
+        return;
+    }
+
+    // Populate preview content
+    document.getElementById("previewContent").innerHTML = `
+        <p><strong>Name:</strong> ${exam.name}</p>
+        <p><strong>Date:</strong> ${exam.date}</p>
+        <p><strong>Time:</strong> ${exam.time}</p>
+    `;
+
+    // Show modal
+    document.getElementById("previewModal").style.display = "block";
+}
+
+function closePreview() {
+    document.getElementById("previewModal").style.display = "none";
+}
+
+        function setExam() {
+            let savedExam = JSON.parse(localStorage.getItem("finalizedExam"));
+        
+            if (!savedExam) {
+                alert("No finalized exams found.");
+                return;
+            }
+        
+            let savedPapersDiv = document.getElementById("savedPapers");
+            savedPapersDiv.innerHTML = `<h3>Saved Papers</h3>`;
+        
+            let paperDiv = document.createElement("div");
+            paperDiv.style.border = "1px solid #007bff";
+            paperDiv.style.padding = "10px";
+            paperDiv.style.margin = "10px 0";
+            paperDiv.style.borderRadius = "5px";
+            paperDiv.style.background = "#ffffff";
+        
+            let paperContent = `<strong>${savedExam.examName}</strong><br>
+                                <small>Date: ${savedExam.examDate} | Time: ${savedExam.examStartTime} - ${savedExam.examEndTime} | Duration: ${savedExam.examDuration} min</small><br><br>
+                                <button class="btn save-btn" onclick="reviewPaper()">Review Paper</button>
+                                <button class="btn add-btn" onclick="uploadPaper()">Upload Paper</button>`;
+            
+            paperDiv.innerHTML = paperContent;
+            savedPapersDiv.appendChild(paperDiv);
+        }
+        function loadSetExams() {
+          let exams = JSON.parse(localStorage.getItem("setExams")) || [];
+          console.log("Loaded exams:", exams); // Debugging
+      
+          const examListDiv = document.getElementById("setExamsList");
+          examListDiv.innerHTML = "";
+      
+          if (exams.length === 0) {
+              examListDiv.innerHTML = "<p>No exams set yet.</p>";
+              return;
+          }
+      
+          exams.forEach((exam, index) => {
+              if (!exam.name || !exam.date || !exam.time) {
+                  console.error("Invalid exam entry:", exam);
+                  return;
+              }
+      
+              const examEntry = document.createElement("div");
+              examEntry.classList.add("exam-item"); // Add class for styling
+              examEntry.innerHTML = `
+                  <strong>${exam.name}</strong> (Date: ${exam.date}, Time: ${exam.time})<br>
+                  <button onclick="previewExam(${index})">Preview Exam</button>
+            <button onclick="reviewExam(${index})">Review</button>
+            <button onclick="uploadExam(${index})">Upload</button>
+              `;
+              examListDiv.appendChild(examEntry);
+          });
+      }      
+      
+      function saveExam(exam) {
+        let exams = JSON.parse(localStorage.getItem("setExams")) || [];
+        
+        // Ensure exam object has all required properties
+        if (exam && exam.name && exam.date && exam.time) {
+            exams.push(exam);
+            localStorage.setItem("setExams", JSON.stringify(exams));
+            console.log("Exam saved:", exam); // Debugging
+        } else {
+            console.error("Invalid exam data:", exam);
+        }
+    }    
+
+        function logout() {
+            window.location.href = "login.html";
+        }
+    </script>
+</head>
+<body>
+
+    <!-- Header -->
+    <div class="header">
+        <h2>Teacher Dashboard</h2>
+        <button onclick="showProfile()">My Profile</button>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <button onclick="loadUpcomingExams()">Set Exams</button>
+            
+            <button onclick="loadPastExams()">Result</button>
+            <button onclick="alert('Quiz Section Coming Soon!')">Set Quiz</button>
+            <button onclick="alert('Support System Coming Soon!')">Support</button>
+            <button onclick="logout()">Logout</button>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content" id="mainContent">
+            <h2>Welcome to the Teacher Dashboard</h2>
+            <p>Click on the buttons in the sidebar to navigate.</p>
+            <div id="setExamsList">
+              <!-- Dynamically populated list of exams -->
+          </div>
+        </div>
+
+        <!-- Right Panel (Announcements) -->
+        <div class="right-panel">
+            <h3>Announcements</h3>
+            <ul>
+                <li>Student request</li>
+                <li>Re-evaluation requests open</li>
+            </ul>
+        </div>
+
+    </div>
+<!-- Modal for Preview -->
+<div id="previewModal" class="modal" style="display: none;">
+  <div class="modal-content">
+      <span class="close" onclick="closePreview()">&times;</span>
+      <h2>Exam Preview</h2>
+      <div id="previewContent"></div>
+      <button onclick="uploadExam()">Upload Exam</button>
+  </div>
+</div>
+
+</body>
+</html>
+

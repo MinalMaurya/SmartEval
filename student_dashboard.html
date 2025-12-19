@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Dashboard</title>
+  <style>
+    /* Reset Styles */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Body Styling */
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      background: linear-gradient(135deg, #f4f6f9, #e3e5e8);
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, #6c63ff, #3f37c9);
+      color: #fff;
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    .header h2 {
+      font-size: 28px;
+      font-weight: 600;
+    }
+
+    .header button {
+      background: #f7f7f7;
+      border: none;
+      color: #3f37c9;
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+
+    .header button:hover {
+      background: #d3d3d3;
+    }
+
+    /* Container Layout */
+    .container {
+      flex: 1;
+      display: flex;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 250px;
+      background: linear-gradient(135deg, #6c63ff, #3f37c9);
+      color: #fff;
+      padding: 25px 15px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 4px 0 6px rgba(0, 0, 0, 0.2);
+    }
+
+    .sidebar button {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: #fff;
+      text-align: left;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 10px;
+      font-size: 18px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .sidebar button:hover {
+      background: rgba(255, 255, 255, 0.4);
+      transform: translateX(5px);
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      padding: 30px;
+      overflow-y: auto;
+    }
+
+    .main-content h2 {
+      margin-bottom: 20px;
+      color: #3f37c9;
+      border-bottom: 2px solid #3f37c9;
+      padding-bottom: 10px;
+    }
+
+    /* Exam Cards */
+    .exam-item {
+      background: #fff;
+      margin: 20px 0;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+      border-left: 5px solid #3f37c9;
+      transition: transform 0.3s;
+    }
+
+    .exam-item:hover {
+      transform: translateY(-5px);
+    }
+
+    .exam-item h3 {
+      color: #3f37c9;
+      margin-bottom: 15px;
+    }
+
+    .exam-item p {
+      margin: 5px 0;
+      color: #555;
+    }
+
+    .exam-item button {
+      margin-top: 15px;
+      padding: 10px 15px;
+      border: none;
+      background: #28a745;
+      color: #fff;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .exam-item button:hover {
+      background: #218838;
+    }
+
+    /* Right Panel */
+    .right-panel {
+      width: 300px;
+      background: #fff;
+      padding: 20px;
+      border-left: 3px solid #3f37c9;
+      box-shadow: -4px 0 6px rgba(0, 0, 0, 0.2);
+    }
+
+    .right-panel h3 {
+      margin-top: 0;
+      margin-bottom: 15px;
+      color: #3f37c9;
+      border-bottom: 2px solid #3f37c9;
+      padding-bottom: 10px;
+    }
+
+    .right-panel ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .right-panel li {
+      margin: 10px 0;
+      color: #333;
+      position: relative;
+      padding-left: 20px;
+    }
+
+    .right-panel li::before {
+      content: "📢";
+      position: absolute;
+      left: 0;
+    }
+
+    /* Responsive Design */
+    @media screen and (max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        flex-direction: row;
+        justify-content: space-around;
+        width: 100%;
+      }
+
+      .right-panel {
+        width: 100%;
+        border-left: none;
+        border-top: 3px solid #3f37c9;
+      }
+    }
+  </style>
+
+  <script>
+    // Show Profile Alert
+    function showProfile() {
+      alert("🧑‍🎓 Profile feature coming soon!");
+    }
+
+    // Load Upcoming Exams
+    function loadExams() {
+      const main = document.getElementById("mainContent");
+      main.innerHTML = "<h2>📅 Upcoming Exams</h2>";
+
+      const examData = localStorage.getItem("finalizedExam");
+      if (!examData) {
+        main.innerHTML += "<p>⚠️ No upcoming exams scheduled.</p>";
+        return;
+      }
+
+      const ex = JSON.parse(examData);
+      main.innerHTML += `
+        <div class="exam-item">
+          <h3>${ex.examName}</h3>
+          <p><strong>Date:</strong> ${ex.examDate}</p>
+          <p><strong>Time:</strong> ${ex.examTime}</p>
+          <button onclick="startExamPage()">🚀 Start Exam</button>
+        </div>
+      `;
+    }
+
+    // Start Exam
+    function startExamPage() {
+      window.location.href = "student.html";
+    }
+
+    // Load Past Exams
+    function loadPastExams() {
+      const main = document.getElementById("mainContent");
+      main.innerHTML = "<h2>📜 Past Exams</h2>";
+
+      const stored = localStorage.getItem("pastExams");
+      if (!stored) {
+        main.innerHTML += "<p>⚠️ No past exams found.</p>";
+        return;
+      }
+
+      const past = JSON.parse(stored);
+      if (past.length === 0) {
+        main.innerHTML += "<p>⚠️ No past exams found.</p>";
+        return;
+      }
+
+      past.forEach((exam) => {
+        main.innerHTML += `
+          <div class="exam-item">
+            <h3>${exam.examName}</h3>
+            <p>✅ <strong>Date:</strong> ${exam.date}</p>
+            <p>🎯 <strong>Score:</strong> ${exam.obtainedMarks}/${exam.totalMarks}</p>
+            <p>⭐️ <strong>Pointer:</strong> ${exam.pointer.toFixed(1)}</p>
+          </div>
+        `;
+      });
+    }
+
+    // Placeholder for Quiz
+    function loadQuiz() {
+      const main = document.getElementById("mainContent");
+      main.innerHTML = `<h2>🧠 Quiz Zone</h2><p>⚙️ Quiz functionality will be available soon!</p>`;
+    }
+
+    // Placeholder for Support
+    function loadSupport() {
+      const main = document.getElementById("mainContent");
+      main.innerHTML = `<h2>🛠️ Support Center</h2><p>🆘 Need help? The support system will be live soon!</p>`;
+    }
+
+    // Logout
+    function logout() {
+      window.location.href = "login.html";
+    }
+  </script>
+</head>
+
+<body>
+  <!-- HEADER -->
+  <div class="header">
+    <h2>🎓 SmartEval: Student Dashboard</h2>
+    <button onclick="showProfile()">👤 My Profile</button>
+  </div>
+
+  <!-- MAIN CONTAINER -->
+  <div class="container">
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <button onclick="loadExams()">📖 Exams</button>
+      <button onclick="loadPastExams()">📜 Past Exams</button>
+      <button onclick="loadQuiz()">🧠 Quiz</button>
+      <button onclick="loadSupport()">🆘 Support</button>
+      <button onclick="logout()">🚪 Logout</button>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content" id="mainContent">
+      <h2>🎯 Welcome to the Student Dashboard</h2>
+      <p>Use the sidebar to explore available features.</p>
+    </div>
+
+    <!-- RIGHT PANEL (Announcements) -->
+    <div class="right-panel">
+      <h3>🔔 Announcements</h3>
+      <ul>
+        <li>🗓️ New Exam Schedule Released</li>
+        <li>⏳ Assignment Deadline Extended</li>
+        <li>📑 Re-evaluation Requests Open</li>
+        <li>📣 Upcoming Quiz Competition</li>
+      </ul>
+    </div>
+  </div>
+</body>
+</html>

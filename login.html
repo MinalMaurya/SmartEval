@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Login Page</title>
+  <style>
+    /* Body remains a split container in your final design */
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      height: 100vh;
+    }
+
+    /* SPLIT CONTAINER */
+    .split-container {
+      display: flex;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* LEFT PANEL (purple area) */
+    .left-panel {
+      flex: 1;
+      background: linear-gradient(135deg, #7f5af0, #6246ea);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      color: #fff;
+      padding: 60px;
+    }
+    .left-panel h1 {
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+    .left-panel p {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      max-width: 400px;
+      opacity: 0.9;
+    }
+
+    /* RIGHT PANEL (holds your existing container/box) */
+    .right-panel {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #f7f7f7;
+      padding: 40px;
+    }
+
+    /* Original .container styles */
+    .container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      align-items: center;
+    }
+
+    /* Original .box, but remove white text color */
+    .box {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 30px;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      width: 350px;
+    }
+
+    /* Heading now black for visibility */
+    .box h2 {
+      margin-bottom: 20px;
+      color: #333;
+      font-size: 24px;
+    }
+
+    /* Inputs & Select with black text */
+    select, input {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0;
+      border-radius: 8px;
+      border: none;
+      background: rgba(255, 255, 255, 0.2);
+      color: #000;
+      outline: none;
+      font-size: 16px;
+    }
+
+    /* Placeholder color now gray */
+    select::placeholder, input::placeholder {
+      color: rgba(0, 0, 0, 0.5);
+    }
+
+    /* Button remains the same */
+    .btn {
+      width: 100%;
+      padding: 12px;
+      color: white;
+      background-color: #ff7300;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    .btn:hover {
+      background-color: #e65c00;
+    }
+
+    /* Paragraph text now black for readability */
+    .box p {
+      color: #333;
+      margin-top: 10px;
+    }
+
+    /* Links remain the same color as you prefer */
+    .box p a {
+      color: #333;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .box p a:hover {
+      text-decoration: underline;
+    }
+  </style>
+
+  <script>
+    function redirectToDashboard(event) {
+      event.preventDefault();
+
+      const role = document.getElementById("role").value;
+      const email = document.getElementById("email").value;
+
+      // Email validation: must end with @gmail.com
+      if (!email.endsWith("@gmail.com")) {
+        alert("❌ Email must end with @gmail.com.");
+        return;
+      }
+
+      // Role-based redirection
+      if (role === "student") {
+        window.location.href = "student_dashboard.html";
+      } else if (role === "teacher") {
+        window.location.href = "teacher_dashboard.html";
+      } else {
+        alert("Please select a role");
+      }
+    }
+  </script>
+</head>
+<body>
+  <!-- Split container for left (purple) and right (login form) -->
+  <div class="split-container">
+    <!-- LEFT PANEL -->
+    <div class="left-panel">
+      <h1>SmartEval</h1>
+      <p>
+        Smarter ways to evaluate. Streamline exams, quizzes, and grading with a single platform.
+        <br /><br />
+        Secure, reliable, and easy to use — for both teachers and students.
+      </p>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="right-panel">
+      <div class="container">
+        <div class="box">
+          <h2>Login</h2>
+          <form onsubmit="redirectToDashboard(event)">
+            <select id="role" name="role" required>
+              <option value="">Select Role</option>
+              <option value="student">Student</option>
+              <option value="teacher">Teacher</option>
+            </select>
+            <input type="email" id="email" placeholder="Enter Email Address (must end with @gmail.com)" required>
+            <input type="password" placeholder="Password" required>
+            <button type="submit" class="btn">Login</button>
+          </form>
+          <p><a href="forget-password.html">Forgot Password?</a></p>
+          <p>Don't have an account? <a href="signup.html">Create an Account</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

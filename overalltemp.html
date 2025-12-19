@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f4f4f4;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        /* Header */
+        #header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #1e5387;
+            color: rgb(255, 255, 255);
+            padding: 20px 40px;
+            font-size: 20px;
+            flex: 0;
+        }
+
+        /* Timer */
+        #timer {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        /* Main Content */
+        #mainContent {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            display: none;
+        }
+
+        /* Exam Container */
+        #examContainer {
+            flex: 2;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            min-height: 400px;
+            margin-right: 20px;
+        }
+
+        /* Question Navigation */
+        #questionNav {
+            flex: 0.5;
+            max-width: 200px;
+            height: 500px;
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            overflow-y: auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            align-content: flex-start;
+            flex-direction: column;
+        }
+
+        /* Ensure "Questions:" label is properly aligned */
+        #questionNav strong {
+            display: block;
+            width: 100%;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .question-btn {
+            padding: 10px;
+            width: 40px;
+            height: 40px; /* Ensure square buttons */
+            cursor: pointer;
+            background: #ddd;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 14px;
+            border-radius: 5px;
+        }
+
+        /* Currently Attempting Question */
+        .question-btn.active {
+            background: #d8b4f8; /* Light Purple */
+            color: black;
+        }
+
+        /* Answered Question */
+        .question-btn.answered {
+            background: #a3e635; /* Light Green */
+            color: black;
+        }
+
+        /* Skipped Question */
+        .question-btn.skipped {
+            background: #fde047; /* Light Yellow */
+            color: black;
+        }
+
+        /* Footer */
+        #footer {
+            background: #1e5387;
+            color: white;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex: 0;
+            display: none;
+        }
+
+        button {
+            padding: 12px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            opacity: 0.8;
+        }
+
+        #startExamBtn { background: #070707; color: rgb(255, 255, 255); }
+        #submitBtn { background: #47cf53; color: rgb(13, 12, 12); display: none; }
+        #prevBtn, #nextBtn { background: #ffffff; color: rgb(8, 6, 6); }
+    </style>
+</head>
+<body>
+
+    <div id="header">
+        <h2>Student Dashboard</h2>
+        <div id="timer">Time Remaining: --:--</div>
+        <button onclick="submitExam()" id="submitBtn">Submit</button>
+    </div>
+    <!-- Instruction Section -->
+    <div id="instructions" style="background: #fff; padding: 20px; margin: 10px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); text-align: center;">
+        <h3>Instructions</h3>
+        <p>Please read the instructions carefully before starting the exam:</p>
+        <ul style="text-align: left; display: inline-block;">
+            <li>The exam is timed, and the timer will start as soon as you begin.</li>
+            <li>Once you submit, you cannot modify your answers.</li>
+            <li>Navigate through questions using the Previous and Next buttons.</li>
+            <li>Ensure a stable internet connection throughout the exam.</li>
+        </ul>
+        <p>Click the "Start Exam" button when you are ready.</p>
+    </div>
+    <div id="examStatusText"></div>
+    <div id="examDateText"></div>
+    <button id="startExamBtn" onclick="startExam()">Start Exam</button>
+
+    <div id="mainContent">
+        <div id="examContainer"></div>
+        <div id="questionNav"></div>
+    </div>
+
+    <div id="footer">
+        <button onclick="prevQuestion()" id="prevBtn">Previous</button>
+        <button onclick="nextQuestion()" id="nextBtn">Next</button>
+        <button onclick="skipQuestion()" id="skipBtn">Skip</button>
+    </div>
+
+    <script>
+        let studentAnswers = {};
+        let currentIndex = 0;
+        let examDuration = 2 * 60 * 60; // 2 hours in seconds
+        let timerInterval;
+        let questions = []; // Will be populated dynamically
+    
+        // Fetch teacher's questions from a JSON file or an API
+        async function loadTeacherQuestions() {
+            try {
+                const response = await fetch('teacher_questions.json'); // Adjust path or URL if needed
+                if (!response.ok) {
+                    throw new Error("Network response was not ok");
+                }
+                questions = await response.json();
+            } catch (error) {
+                console.error("Error loading teacher questions:", error);
+                // Optionally, you can show an error message to the student
+            }
+        }
+    
+        async function startExam() {
+            // First, load the teacher's questions dynamically
+            await loadTeacherQuestions();
+            
+            // Hide instructions and show exam interface only if questions are available
+            if (questions && questions.length > 0) {
+                document.getElementById("instructions").style.display = "none";
+                document.getElementById("mainContent").style.display = "flex";
+                document.getElementById("submitBtn").style.display = "block";
+                document.getElementById("footer").style.display = "flex";
+                document.getElementById("startExamBtn").style.display = "none";
+    
+                renderQuestionNav();
+                loadExamQuestion();
+                startTimer();
+            } else {
+                alert("No exam questions available at the moment.");
+            }
+        }
+    
+        function renderQuestionNav() {
+            let navBox = document.getElementById("questionNav");
+            navBox.innerHTML = "<strong>Questions:</strong> <br>";
+            
+            questions.forEach((_, index) => {
+                let btn = document.createElement("button");
+                btn.innerText = `Q${index + 1}`;
+                btn.className = "question-btn";
+                
+                if (index === currentIndex) {
+                    btn.classList.add("active"); // Currently attempting
+                } else if (studentAnswers[index] && studentAnswers[index].length > 0) {
+                    btn.classList.add("answered"); // Answered question
+                } else if (index < currentIndex) {
+                    btn.classList.add("skipped"); // Skipped question
+                }
+        
+                btn.onclick = () => goToQuestion(index);
+                navBox.appendChild(btn);
+            });
+        }
+        
+        function goToQuestion(index) {
+            currentIndex = index;
+            loadExamQuestion();
+            renderQuestionNav();
+        }
+    
+        function loadExamQuestion() {
+            let examBox = document.getElementById("examContainer");
+        
+            if (!questions || questions.length === 0 || !questions[currentIndex]) {
+                examBox.innerHTML = "<p>No questions available!</p>";
+                return;
+            }
+        
+            let q = questions[currentIndex];
+            let savedAnswers = studentAnswers[currentIndex] || [];
+        
+            examBox.innerHTML = `<h3>Question ${currentIndex + 1} of ${questions.length}</h3><p>${q.text}</p>`;
+        
+            if (q.type === "MCQ") {
+                q.options.forEach((opt) => {
+                    let checked = savedAnswers.includes(opt) ? "checked" : "";
+                    examBox.innerHTML += `<div><input type='radio' name='answer${currentIndex}' value='${opt}' ${checked} onchange='saveStudentAnswer(this)'> ${opt}</div>`;
+                });
+            } else if (q.type === "MSQ") {
+                q.options.forEach((opt) => {
+                    let checked = savedAnswers.includes(opt) ? "checked" : "";
+                    examBox.innerHTML += `<div><input type='checkbox' name='answer${currentIndex}' value='${opt}' ${checked} onchange='saveStudentAnswer(this)'> ${opt}</div>`;
+                });
+            } else if (q.type === "Text") {
+                let answer = savedAnswers.length > 0 ? savedAnswers[0] : "";
+                examBox.innerHTML += `
+                    <div style="margin-top: 10px;">
+                        <textarea id="textAnswer${currentIndex}" rows="10" cols="70" placeholder="Write your answer here...">${answer}</textarea>
+                    </div>`;
+            }
+        }
+        
+        function saveStudentAnswer(input) {
+            let qIndex = currentIndex;
+            if (!studentAnswers[qIndex]) {
+                studentAnswers[qIndex] = [];
+            }
+        
+            if (input.type === "radio") {
+                studentAnswers[qIndex] = [input.value];  // Single answer for MCQ
+            } else if (input.type === "checkbox") {
+                if (input.checked) {
+                    studentAnswers[qIndex].push(input.value);
+                } else {
+                    studentAnswers[qIndex] = studentAnswers[qIndex].filter(val => val !== input.value);
+                }
+            } else if (input.tagName === "TEXTAREA") {
+                studentAnswers[qIndex] = [input.value];  // Store text answer
+            }
+        
+            localStorage.setItem("studentAnswers", JSON.stringify(studentAnswers));
+        }
+    
+        function prevQuestion() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                loadExamQuestion();
+                renderQuestionNav(); // Refresh navigation to update active state
+            }
+        }
+        
+        function nextQuestion() {
+            if (currentIndex < questions.length - 1) {
+                currentIndex++;
+                loadExamQuestion();
+                renderQuestionNav(); // Refresh navigation to update active state
+            }
+        }
+        
+        function skipQuestion() {
+            let nextUnansweredIndex = questions.findIndex((_, index) => 
+                !studentAnswers[index] || studentAnswers[index].length === 0
+            );
+            
+            if (nextUnansweredIndex !== -1 && nextUnansweredIndex !== currentIndex) {
+                currentIndex = nextUnansweredIndex;
+            } else if (currentIndex < questions.length - 1) {
+                currentIndex++;
+            }
+            
+            loadExamQuestion();
+            renderQuestionNav();
+        }
+        
+        function submitExam() {
+            clearInterval(timerInterval);
+        
+            let countdown = 3;
+            let messageBox = document.createElement("div");
+            messageBox.style.position = "fixed";
+            messageBox.style.top = "50%";
+            messageBox.style.left = "50%";
+            messageBox.style.transform = "translate(-50%, -50%)";
+            messageBox.style.background = "#000";
+            messageBox.style.color = "#fff";
+            messageBox.style.padding = "20px";
+            messageBox.style.borderRadius = "10px";
+            messageBox.style.fontSize = "18px";
+            messageBox.style.textAlign = "center";
+            messageBox.style.zIndex = "1000";
+            document.body.appendChild(messageBox);
+        
+            function updateCountdown() {
+                if (countdown > 0) {
+                    messageBox.innerText = `Redirecting to dashboard in ${countdown}...`;
+                    countdown--;
+                    setTimeout(updateCountdown, 1000);
+                } else {
+                    document.body.removeChild(messageBox);
+                    window.location.href = "student_dashboard.html"; // Change to actual dashboard URL
+                }
+            }
+        
+            updateCountdown();
+        }
+        
+        function startTimer() {
+            let timerDisplay = document.getElementById("timer");
+        
+            timerInterval = setInterval(() => {
+                if (examDuration <= 0) {
+                    clearInterval(timerInterval);
+                    submitExam();
+                } else {
+                    let minutes = Math.floor(examDuration / 60);
+                    let seconds = examDuration % 60;
+                    timerDisplay.innerText = `Time Remaining: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+                    examDuration--;
+                }
+            }, 1000);
+        }
+    </script>
+    <div id="debugOutput" style="white-space: pre-wrap; background: #333; color: #fff; padding: 10px; margin-top: 20px; display: none;"></div>
+</body>
+</html>

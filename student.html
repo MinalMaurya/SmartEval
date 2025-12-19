@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Student Exam</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      background: #f4f4f4;
+    }
+    #header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(135deg, #7f5af0, #6246ea);
+      color: #fff;
+      padding: 20px 40px;
+      font-size: 20px;
+    }
+    #timer {
+      font-size: 18px;
+      font-weight: bold;
+    }
+    #mainContent {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      display: none;
+    }
+    #examContainer {
+      flex: 2;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      min-height: 400px;
+      margin-right: 20px;
+    }
+    #questionNav {
+      flex: 0.5;
+      max-width: 200px;
+      height: 500px;
+      background: #f9f9f9;
+      padding: 15px;
+      border-radius: 10px;
+      border: 1px solid #ddd;
+      overflow-y: auto;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      align-content: flex-start;
+      flex-direction: row;
+    }
+    #questionNav strong {
+      display: block;
+      width: 100%;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    .question-btn {
+      padding: 10px;
+      width: 40px;
+      height: 40px;
+      cursor: pointer;
+      background: #ddd;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      border-radius: 5px;
+    }
+    .question-btn.active { background: #d8b4f8; color: #000; }
+    .question-btn.answered { background: #a3e635; color: #000; }
+    .question-btn.skipped { background: #fde047; color: #000; }
+    #footer {
+      background: linear-gradient(135deg, #7f5af0, #6246ea);
+      color: #fff;
+      padding: 20px 40px;
+      display: none;
+      justify-content: center;
+      gap: 20px;
+    }
+    button {
+      padding: 12px;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+      transition: 0.3s;
+    }
+    #startExamBtn {
+      background: #070707;
+      color: #fff;
+    }
+    #submitBtn {
+      background: #47cf53;
+      color: #0d0c0c;
+      display: none;
+    }
+    #prevBtn, #nextBtn {
+      background: #fff;
+      color: #060606;
+    }
+    #instructions {
+      background: #fff;
+      padding: 20px;
+      margin: 10px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div id="header">
+    <h2>Student Exam</h2>
+    <div id="timer">Time Remaining: --:--</div>
+    <button onclick="submitExam()" id="submitBtn">Submit</button>
+  </div>
+  <!-- Instruction Section -->
+  <div id="instructions">
+    <h3>Instructions</h3>
+    <p>Read instructions carefully. Then click "Start Exam".</p>
+    <ul style="text-align:left; display:inline-block;">
+      <li>Exam is timed.</li>
+      <li>Once submitted, answers can't be changed.</li>
+    </ul>
+  </div>
+  <button id="startExamBtn" onclick="startExam()">Start Exam</button>
+
+  <div id="mainContent">
+    <div id="examContainer"></div>
+    <div id="questionNav"></div>
+  </div>
+
+  <div id="footer">
+    <button onclick="prevQuestion()" id="prevBtn">Previous</button>
+    <button onclick="nextQuestion()" id="nextBtn">Next</button>
+    <button onclick="skipQuestion()" id="skipBtn">Skip</button>
+  </div>
+
+  <script>
+    let studentAnswers = {};
+    let currentIndex = 0;
+    let examDuration = 0;
+    let timerInterval;
+    let questions = [];
+
+    function startExam() {
+      const examDataStr = localStorage.getItem("finalizedExam");
+      if (!examDataStr) {
+        alert("No exam found! Please ask teacher to finalize exam.");
+        return;
+      }
+      const examData = JSON.parse(examDataStr);
+      if (!examData.questions || examData.questions.length === 0) {
+        alert("Exam has no questions!");
+        return;
+      }
+      examDuration = examData.examDuration * 60;
+      questions = examData.questions;
+
+      document.getElementById("instructions").style.display = "none";
+      document.getElementById("startExamBtn").style.display = "none";
+      document.getElementById("mainContent").style.display = "flex";
+      document.getElementById("submitBtn").style.display = "block";
+      document.getElementById("footer").style.display = "flex";
+
+      renderQuestionNav();
+      loadExamQuestion();
+      startTimer();
+    }
+
+    function renderQuestionNav() {
+      const nav = document.getElementById("questionNav");
+      nav.innerHTML = "<strong>Questions:</strong><br>";
+      questions.forEach((q, idx) => {
+        const btn = document.createElement("button");
+        btn.className = "question-btn";
+        btn.innerText = `Q${idx+1}`;
+        if (idx === currentIndex) {
+          btn.classList.add("active");
+        } else if (studentAnswers[idx] && studentAnswers[idx].length>0) {
+          btn.classList.add("answered");
+        } else if (idx < currentIndex) {
+          btn.classList.add("skipped");
+        }
+        btn.onclick = () => goToQuestion(idx);
+        nav.appendChild(btn);
+      });
+    }
+
+    function goToQuestion(idx) {
+      currentIndex = idx;
+      loadExamQuestion();
+      renderQuestionNav();
+    }
+
+    function loadExamQuestion() {
+      const container = document.getElementById("examContainer");
+      const q = questions[currentIndex];
+      if (!q) {
+        container.innerHTML = "<p>No question!</p>";
+        return;
+      }
+      const saved = studentAnswers[currentIndex] || [];
+
+      container.innerHTML = `
+        <h3>Question ${currentIndex+1} of ${questions.length}</h3>
+        <p><strong>${q.text}</strong> (Marks: ${q.marks || 1})</p>
+      `;
+
+      if (q.type === "MCQ") {
+        q.options.forEach(opt => {
+          const checked = saved.includes(opt) ? "checked" : "";
+          container.innerHTML += `
+            <div>
+              <input type="radio" name="ans${currentIndex}" value="${opt}" ${checked} onchange="saveAnswer(this)" />
+              ${opt}
+            </div>
+          `;
+        });
+      } else if (q.type === "MSQ") {
+        q.options.forEach(opt => {
+          const checked = saved.includes(opt) ? "checked" : "";
+          container.innerHTML += `
+            <div>
+              <input type="checkbox" name="ans${currentIndex}" value="${opt}" ${checked} onchange="saveAnswer(this)" />
+              ${opt}
+            </div>
+          `;
+        });
+      } else if (q.type === "TEXT") {
+        const val = saved[0] || "";
+        container.innerHTML += `
+          <textarea rows="4" style="width:100%;" oninput="saveAnswer(this)">${val}</textarea>
+        `;
+      }
+    }
+
+    function saveAnswer(input) {
+      if (!studentAnswers[currentIndex]) studentAnswers[currentIndex] = [];
+      const qType = questions[currentIndex].type;
+      if (qType === "MCQ") {
+        studentAnswers[currentIndex] = [input.value];
+      } else if (qType === "MSQ") {
+        if (input.checked) {
+          studentAnswers[currentIndex].push(input.value);
+        } else {
+          studentAnswers[currentIndex] = studentAnswers[currentIndex].filter(v=>v!==input.value);
+        }
+      } else if (qType==="TEXT") {
+        studentAnswers[currentIndex] = [input.value];
+      }
+    }
+
+    function prevQuestion() {
+      if (currentIndex>0) {
+        currentIndex--;
+        loadExamQuestion();
+        renderQuestionNav();
+      }
+    }
+    function nextQuestion() {
+      if (currentIndex<questions.length-1) {
+        currentIndex++;
+        loadExamQuestion();
+        renderQuestionNav();
+      }
+    }
+    function skipQuestion() {
+      let nextIdx = questions.findIndex((_,i)=>!studentAnswers[i]||studentAnswers[i].length===0);
+      if (nextIdx!==-1 && nextIdx!==currentIndex) {
+        currentIndex = nextIdx;
+      } else if (currentIndex<questions.length-1) {
+        currentIndex++;
+      }
+      loadExamQuestion();
+      renderQuestionNav();
+    }
+
+    function submitExam() {
+      clearInterval(timerInterval);
+
+      const examData = JSON.parse(localStorage.getItem("finalizedExam"));
+      if (!examData) {
+        alert("No exam data found!");
+        return;
+      }
+      let total = 0;
+      let score=0;
+      examData.questions.forEach((q, idx)=>{
+        total += q.marks||1;
+        const ans = studentAnswers[idx]||[];
+        const correct = q.correctAnswers||[];
+        let correctFlag = false;
+        if (q.type==="MCQ") {
+          if (ans.length===1 && correct.length===1 && ans[0]===correct[0]) correctFlag=true;
+        } else if (q.type==="MSQ") {
+          if (ans.length===correct.length && ans.every(a=>correct.includes(a))) correctFlag=true;
+        } else if (q.type==="TEXT") {
+          // partial or skip
+          if (ans[0] && ans[0].trim().length>0) {
+            score += (q.marks||1)/2; 
+          }
+        }
+        if (correctFlag) {
+          score += (q.marks||1);
+        }
+      });
+      let pointer = (score/total)*10;
+      if (pointer<1) pointer=1;
+      if (pointer>10) pointer=10;
+
+      alert(`Exam submitted!\nScore: ${score}/${total}\nPointer: ${pointer.toFixed(1)}`);
+
+      // Save to pastExams
+      let past = JSON.parse(localStorage.getItem("pastExams"))||[];
+      past.push({
+        examName: examData.examName,
+        date: new Date().toLocaleString(),
+        totalMarks: total,
+        obtainedMarks: score,
+        pointer
+      });
+      localStorage.setItem("pastExams", JSON.stringify(past));
+
+      window.location.href="student_dashboard.html";
+    }
+
+    function startTimer() {
+      const disp=document.getElementById("timer");
+      timerInterval = setInterval(()=>{
+        if (examDuration<=0) {
+          clearInterval(timerInterval);
+          submitExam();
+        } else {
+          let m=Math.floor(examDuration/60);
+          let s=examDuration%60;
+          disp.innerText=`Time Remaining: ${m}:${s<10?"0":""}${s}`;
+          examDuration--;
+        }
+      },1000);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz System</title>
+</head>
+<body>
+    <div id="studentContainer" style="display:none;">
+        <h2>Student Interface</h2>
+        <div id="questionBox"></div>
+        
+        <div id="navigation-buttons">
+            <button onclick="prevQuestion()" id="prevBtn">Previous</button>
+            <button onclick="nextQuestion()" id="nextBtn">Next</button>
+        </div>
+        <button onclick="submitTest()">Submit</button>
+    </div>
+    <script>
+        function startTest() {
+            if (questions.length === 0) {
+                alert("Please add at least one question before starting the test.");
+                return;
+            }
+            document.getElementById("teacherContainer").style.display = "none";
+            document.getElementById("studentContainer").style.display = "block";
+            currentIndex = 0;
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            let questionBox = document.getElementById("questionBox");
+            let q = questions[currentIndex];
+
+            questionBox.innerHTML = `<h3>Question ${currentIndex + 1} of ${questions.length}</h3><p>${q.text}</p>`;
+
+            if (q.type === "MCQ" || q.type === "MSQ") {
+                q.options.forEach((opt) => {
+                    let checked = answers[currentIndex] && answers[currentIndex].includes(opt) ? "checked" : "";
+                    questionBox.innerHTML += `<div>
+                        <input type='${q.type === "MCQ" ? "radio" : "checkbox"}' name='answer' value='${opt}' ${checked} onchange='saveAnswer(this)'> ${opt}
+                    </div>`;
+                });
+            } else {
+                let savedAnswer = answers[currentIndex] || "";
+                questionBox.innerHTML += `<input type='text' value='${savedAnswer}' oninput='saveAnswer(this)'>`;
+            }
+
+            document.getElementById("prevBtn").disabled = currentIndex === 0;
+            document.getElementById("nextBtn").disabled = currentIndex === questions.length - 1;
+        }
+
+        function saveAnswer(input) {
+            let q = questions[currentIndex];
+            if (q.type === "MCQ") {
+                answers[currentIndex] = [input.value];
+            } else if (q.type === "MSQ") {
+                if (!answers[currentIndex]) answers[currentIndex] = [];
+                if (input.checked) {
+                    answers[currentIndex].push(input.value);
+                } else {
+                    answers[currentIndex] = answers[currentIndex].filter(ans => ans !== input.value);
+                }
+            } else {
+                answers[currentIndex] = input.value;
+            }
+        }
+
+        function prevQuestion() {
+            if (currentIndex > 0) {
+                saveCurrentAnswer();
+                currentIndex--;
+                loadQuestion();
+            }
+        }
+
+        function nextQuestion() {
+            if (currentIndex < questions.length - 1) {
+                saveCurrentAnswer();
+                currentIndex++;
+                loadQuestion();
+            }
+        }
+
+        function saveCurrentAnswer() {
+            let q = questions[currentIndex];
+            let inputs = document.getElementsByName("answer");
+
+            if (q.type === "MCQ") {
+                answers[currentIndex] = [...inputs].filter(input => input.checked).map(input => input.value);
+            } else if (q.type === "MSQ") {
+                answers[currentIndex] = [...inputs].filter(input => input.checked).map(input => input.value);
+            } else {
+                let textInput = document.querySelector("#questionBox input[type='text']");
+                if (textInput) {
+                    answers[currentIndex] = textInput.value;
+                }
+            }
+        }
+
+        function submitTest() {
+            saveCurrentAnswer();
+            alert("Test Submitted!\n" + JSON.stringify(answers, null, 2));
+        }
+    </script>
+</body>
+</html>

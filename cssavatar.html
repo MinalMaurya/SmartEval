@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS Avatar</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+
+        .avatar {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, #cce0ff 20%, #a8c4ff 80%);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .head {
+            position: absolute;
+            width: 90px;
+            height: 110px;
+            background-color: #f8d9cc;
+            border-radius: 50%;
+            top: 50px;
+        }
+
+        .hair {
+            position: absolute;
+            width: 100px;
+            height: 80px;
+            background-color: #e8c078;
+            border-radius: 50%;
+            top: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .ear {
+            position: absolute;
+            width: 20px;
+            height: 30px;
+            background-color: #f8d9cc;
+            border-radius: 50%;
+            right: 10px;
+            top: 70px;
+        }
+
+        .body {
+            position: absolute;
+            width: 120px;
+            height: 100px;
+            background-color: #3f6180;
+            border-radius: 20px;
+            top: 130px;
+        }
+
+        .shirt {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background-color: #d17d7d;
+            border-radius: 10px;
+            top: 140px;
+        }
+
+        .suit {
+            position: absolute;
+            width: 140px;
+            height: 100px;
+            background-color: #2e4a66;
+            top: 130px;
+            clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+        }
+    </style>
+</head>
+<body>
+    <div class="avatar">
+        <div class="hair"></div>
+        <div class="head"></div>
+        <div class="ear"></div>
+        <div class="body"></div>
+        <div class="suit"></div>
+        <div class="shirt"></div>
+    </div>
+</body>
+</html>

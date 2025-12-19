@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Teacher Panel</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+    }
+    body {
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    .header {
+      background: linear-gradient(135deg, #7f5af0, #6246ea);
+      color: white;
+      padding: 15px;
+      text-align: center;
+      font-size: 20px;
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .header div {
+      flex: 1;
+      text-align: center;
+      padding: 5px;
+    }
+    .header input {
+      width: 80%;
+      padding: 8px;
+      margin-top: 5px;
+      border: none;
+      border-radius: 5px;
+      font-size: 14px;
+      text-align: center;
+    }
+    .container {
+      flex: 1;
+      display: flex;
+      justify-content: space-between;
+      padding: 20px;
+    }
+    .left-panel,
+    .right-panel {
+      padding: 20px;
+      border-radius: 10px;
+    }
+    .left-panel {
+      background: #cbcdd1;
+      width: 65%;
+    }
+    .right-panel {
+      background: #cbcdd1;
+      width: 30%;
+      text-align: center;
+    }
+    #questionList {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 10px;
+    }
+    .question-box {
+      width: 40px;
+      height: 40px;
+      background: #007bff;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      border-radius: 5px;
+    }
+    label {
+      font-size: 16px;
+      font-weight: 500;
+      display: block;
+      margin-top: 10px;
+    }
+    input,
+    select,
+    textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 14px;
+      outline: none;
+    }
+    .btn {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .btn:hover {
+      opacity: 0.8;
+    }
+    .add-btn {
+      background: #8f73e3;
+      color: white;
+    }
+    .save-btn {
+      background: #7156c0;
+      color: white;
+    }
+    .finalize-btn {
+      background: #f3f5f3;
+      color: #030303;
+      width: 25%;
+    }
+    .question-count {
+      font-size: 18px;
+      font-weight: 600;
+      margin-top: 10px;
+    }
+    .footer {
+      background: linear-gradient(135deg, #7f5af0, #6246ea);
+      color: white;
+      text-align: center;
+      padding: 15px;
+      font-size: 18px;
+    }
+    .exam-time-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      justify-content: center;
+    }
+    .exam-time-container input {
+      flex: 1;
+      text-align: center;
+    }
+
+    /* For the option rows (MCQ/MSQ) */
+    .option-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 5px;
+    }
+    .option-row input[type="text"] {
+      flex: 1;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <div class="header">
+    <div>
+      Set Exam Paper Name
+      <input type="text" id="examName" placeholder="Enter Exam Name" />
+    </div>
+    <div>
+      Set Timing
+      <input type="number" id="examDuration" min="1" value="120" /> min
+    </div>
+    <div>
+      Set Exam Date
+      <input type="date" id="examDate" />
+    </div>
+    <div>
+      Set Exam Time (From - To)
+      <div class="exam-time-container">
+        <input type="time" id="examStartTime" />
+        <span>to</span>
+        <input type="time" id="examEndTime" />
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- Left Panel -->
+    <div class="left-panel">
+      <label>Exam Question:</label>
+      <textarea id="questionText" rows="3" placeholder="Enter question here..."></textarea>
+
+      <label>Type of Question:</label>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <select id="questionType" onchange="toggleOptions()" style="width: 60%;">
+          <option value="MCQ">MCQ</option>
+          <option value="MSQ">MSQ</option>
+          <option value="TEXT">Text</option>
+        </select>
+
+        <label for="questionMarks">Marks:</label>
+        <input type="number" id="questionMarks" min="1" value="1" style="width: 30%;" />
+      </div>
+
+      <div id="optionsContainer"></div>
+      <button class="btn add-btn" onclick="addOption()">Add Option</button>
+      <button class="btn save-btn" onclick="addQuestion()">Add Question</button>
+    </div>
+
+    <!-- Right Panel -->
+    <div class="right-panel">
+      <h3>Questions Added</h3>
+      <div class="question-count" id="questionCount">0</div>
+      <div id="questionList"></div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <button class="btn finalize-btn" style="width: 100%;" onclick="finalizeTest()">Finalize Test</button>
+  </div>
+
+  <script>
+    let questionCounter = 0;
+    let questions = [];
+
+    function addOption() {
+      const container = document.getElementById("optionsContainer");
+      const questionType = document.getElementById("questionType").value;
+
+      // Create a row
+      const row = document.createElement("div");
+      row.className = "option-row";
+
+      // Option text
+      const optInput = document.createElement("input");
+      optInput.type = "text";
+      optInput.placeholder = "Enter option";
+      
+      // For MCQ, use radio; for MSQ, use checkbox
+      const correctInput = document.createElement("input");
+      correctInput.type = (questionType === "MCQ") ? "radio" : "checkbox";
+      correctInput.name = (questionType === "MCQ") ? "correctOption" : "";
+      correctInput.style.width = "20px";
+      correctInput.style.height = "20px";
+
+      // Remove button
+      const removeBtn = document.createElement("button");
+      removeBtn.innerText = "❌";
+      removeBtn.style.background = "red";
+      removeBtn.style.color = "white";
+      removeBtn.style.border = "none";
+      removeBtn.style.padding = "5px 8px";
+      removeBtn.style.cursor = "pointer";
+      removeBtn.style.borderRadius = "3px";
+      removeBtn.onclick = () => container.removeChild(row);
+
+      row.appendChild(optInput);
+      row.appendChild(correctInput);
+      row.appendChild(removeBtn);
+
+      container.appendChild(row);
+    }
+
+    function toggleOptions() {
+      const questionType = document.getElementById("questionType").value;
+      const container = document.getElementById("optionsContainer");
+      const addOptionBtn = document.querySelector(".add-btn");
+
+      if (questionType === "TEXT") {
+        container.innerHTML = `<textarea rows="4" placeholder="Student will write their answer here..." style="width: 100%; margin-top: 10px;"></textarea>`;
+        addOptionBtn.style.display = "none";
+      } else {
+        container.innerHTML = "";
+        addOptionBtn.style.display = "block";
+      }
+    }
+
+    function addQuestion() {
+      const questionText = document.getElementById("questionText").value.trim();
+      const questionType = document.getElementById("questionType").value;
+      const marks = parseInt(document.getElementById("questionMarks").value, 10) || 1;
+
+      if (!questionText) {
+        alert("Please enter a question.");
+        return;
+      }
+
+      let newQuestion = {
+        text: questionText,
+        type: questionType,
+        marks,
+        options: [],
+        correctAnswers: []
+      };
+
+      if (questionType === "TEXT") {
+        // No options, no correctAnswers
+      } else {
+        // Gather all option rows
+        const rows = document.querySelectorAll("#optionsContainer .option-row");
+        if (rows.length < 2) {
+          alert("Please add at least two options for MCQ/MSQ.");
+          return;
+        }
+        rows.forEach((row) => {
+          const optText = row.querySelector("input[type='text']").value.trim();
+          if (!optText) return;
+
+          newQuestion.options.push(optText);
+
+          const correctBox = row.querySelector("input[type='radio'], input[type='checkbox']");
+          if (correctBox.checked) {
+            // This option is correct
+            newQuestion.correctAnswers.push(optText);
+          }
+        });
+      }
+
+      questions.push(newQuestion);
+      questionCounter++;
+
+      // Update UI
+      document.getElementById("questionCount").innerText = questionCounter;
+      document.getElementById("questionText").value = "";
+      document.getElementById("optionsContainer").innerHTML = "";
+
+      // Add a small box to the right panel
+      const box = document.createElement("div");
+      box.className = "question-box";
+      box.innerText = questionCounter;
+      document.getElementById("questionList").appendChild(box);
+
+      alert("Question added successfully!");
+    }
+
+    function finalizeTest() {
+      const examName = document.getElementById("examName").value.trim();
+      const examDuration = parseInt(document.getElementById("examDuration").value, 10) || 120;
+      const examDate = document.getElementById("examDate").value;
+      const startTime = document.getElementById("examStartTime").value;
+      const endTime = document.getElementById("examEndTime").value;
+
+      if (!examName || !examDate || !startTime || !endTime) {
+        alert("Please fill all exam details.");
+        return;
+      }
+      if (questions.length === 0) {
+        alert("No questions added!");
+        return;
+      }
+
+      const examData = {
+        examName,
+        examDuration,
+        examDate,
+        examTime: `${startTime} - ${endTime}`,
+        questions
+      };
+
+      localStorage.setItem("finalizedExam", JSON.stringify(examData));
+
+      let countdown = 3;
+      const interval = setInterval(() => {
+        if (countdown > 0) {
+          document.body.innerHTML = `
+            <div style="display:flex; justify-content:center; align-items:center; height:100vh; font-size:24px; font-weight:bold;">
+              Exam finalized! Redirecting to teacher dashboard in ${countdown}...
+            </div>
+          `;
+          countdown--;
+        } else {
+          clearInterval(interval);
+          window.location.href = "teacher_dashboard.html";
+        }
+      }, 1000);
+    }
+  </script>
+</body>
+</html>
