@@ -107,4 +107,16 @@ This version functions as a learning-focused prototype
 
 ## 👩‍💻 Contributors
 - Minal Maurya
-- Siddhi Gaikar 
+- Siddhi Gaikar
+
+## 🎥 SmartEval Phase 1 – Prototype Demo
+
+▶️ **Watch Demo Video (3 min)**  
+This video demonstrates:
+- Teacher login and exam creation
+- MCQ, MSQ, and text-based questions
+- Student login and exam attempt flow
+
+🔗 Demo Link: https://github.com/user-attachments/assets/f8208d81-8a37-4805-9df2-ba1ffd7f2466
+
+
