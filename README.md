@@ -111,7 +111,7 @@ This version functions as a learning-focused prototype
 
 ## 🎥 SmartEval Phase 1 – Prototype Demo
 
-▶️ **Watch Demo Video (3 min)**  
+▶️ **Watch Demo Video (~3 min)**  
 This video demonstrates:
 - Teacher login and exam creation
 - MCQ, MSQ, and text-based questions
