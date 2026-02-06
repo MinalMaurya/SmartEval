@@ -105,9 +105,32 @@ This version functions as a learning-focused prototype
   - Performance analytics and result visualization
   - Scalable and secure exam architecture
 
-## 👩‍💻 Contributors
-- Minal Maurya
-- Siddhi Gaikar
+## 👥 Team Contributions
+
+### **Minal Maurya**
+- **Conceptualized and proposed the SmartEval project idea**, defining the complete online examination workflow
+- Designed the **overall system architecture and UI flow**
+- Developed the **Teacher Module**, including:
+  - Exam creation and scheduling
+  - MCQ, MSQ, and text-based question setup
+  - Dynamic question and option management
+- Implemented teacher-side logic and UI condition handling
+- Contributed to system integration, testing, and UI styling
+
+### **Siddhi Gaikar**
+- Developed the **Student Module**, including:
+  - Displaying teacher-created exams on the student dashboard
+  - Handling exam availability and timing logic
+  - Managing exam attempt flow and local response storage
+- Designed student-side UI interactions and layout
+- Assisted in integration and testing
+
+### **Joint Contribution**
+- Designed and implemented the **end-to-end exam workflow**
+- Integrated teacher-created exams with the student exam portal
+- Collaborated on UI design, usability improvements, and debugging
+- Validated exam logic through multiple test scenarios
+
 
 ## 🎥 SmartEval Phase 1 – Prototype Demo
 
