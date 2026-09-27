@@ -6,17 +6,35 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const twilio = require('twilio');
 
+const path = require('path');
+
 const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// ✅ MongoDB Connection
-mongoose.connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-}).then(() => console.log("✅ Connected to MongoDB"))
-  .catch(err => console.error("❌ MongoDB Connection Error:", err));
+// ✅ Serve Static Frontend Files & Root Route
+app.use(express.static(path.join(__dirname)));
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+app.get(['/login', '/api/login'], (req, res) => {
+    res.sendFile(path.join(__dirname, 'login.html'));
+});
+app.get(['/signup', '/api/signup'], (req, res) => {
+    res.sendFile(path.join(__dirname, 'signup.html'));
+});
+
+// ✅ MongoDB Connection (Optional for Phase 1 prototype)
+if (process.env.MONGO_URI) {
+    mongoose.connect(process.env.MONGO_URI, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true
+    }).then(() => console.log("✅ Connected to MongoDB"))
+      .catch(err => console.error("❌ MongoDB Connection Error:", err));
+} else {
+    console.log("ℹ️ MONGO_URI not provided. Phase 1 frontend prototype operates without MongoDB.");
+}
 
 // ✅ User Schema & Model
 const userSchema = new mongoose.Schema({
@@ -29,7 +47,7 @@ const userSchema = new mongoose.Schema({
 const User = mongoose.model("User", userSchema);
 
 // ✅ Signup Route
-app.post('/signup', async (req, res) => {
+app.post(['/signup', '/api/signup'], async (req, res) => {
     const { name, email, phone, password } = req.body;
 
     // Check if user already exists
@@ -48,7 +66,7 @@ app.post('/signup', async (req, res) => {
 });
 
 // ✅ Login Route
-app.post('/login', async (req, res) => {
+app.post(['/login', '/api/login'], async (req, res) => {
     const { emailPhone, password } = req.body;
 
     // Find user by email or phone
@@ -66,23 +84,28 @@ app.post('/login', async (req, res) => {
     res.json({ success: true, message: "Login successful!" });
 });
 
-// ✅ Twilio OTP Setup
-console.log("Loaded Environment Variables:");
-console.log("TWILIO_SID:", process.env.TWILIO_SID ? "Loaded" : "Missing");
-console.log("TWILIO_AUTH_TOKEN:", process.env.TWILIO_AUTH_TOKEN ? "Loaded" : "Missing");
-console.log("TWILIO_PHONE:", process.env.TWILIO_PHONE ? process.env.TWILIO_PHONE : "Missing");
-
-if (!process.env.TWILIO_SID || !process.env.TWILIO_AUTH_TOKEN || !process.env.TWILIO_PHONE) {
-    console.error("❌ ERROR: Missing Twilio credentials in .env file!");
-    process.exit(1); // Stop server if credentials are missing
+// ✅ Twilio OTP Setup (Optional for Phase 1 prototype)
+let client = null;
+if (process.env.TWILIO_SID && process.env.TWILIO_AUTH_TOKEN && process.env.TWILIO_PHONE) {
+    try {
+        client = new twilio(process.env.TWILIO_SID, process.env.TWILIO_AUTH_TOKEN);
+        console.log("✅ Twilio client initialized.");
+    } catch (err) {
+        console.warn("⚠️ Failed to initialize Twilio client:", err.message);
+    }
+} else {
+    console.log("ℹ️ Twilio credentials not provided. Phase 1 frontend prototype operates without Twilio.");
 }
 
-const client = new twilio(process.env.TWILIO_SID, process.env.TWILIO_AUTH_TOKEN);
 const otpStorage = {}; // Temporary OTP storage
 
 // ✅ Route to send OTP
-app.post('/send-otp', async (req, res) => {
+app.post(['/send-otp', '/api/send-otp'], async (req, res) => {
     let { emailPhone } = req.body;
+
+    if (!client) {
+        return res.json({ success: false, message: "Twilio credentials are not configured on the server." });
+    }
 
     if (!emailPhone) {
         return res.json({ success: false, message: "❌ Phone number is required." });
@@ -112,7 +135,7 @@ app.post('/send-otp', async (req, res) => {
 });
 
 // ✅ Route to verify OTP
-app.post('/verify-otp', (req, res) => {
+app.post(['/verify-otp', '/api/verify-otp'], (req, res) => {
     const { emailPhone, otp } = req.body;
 
     if (!otpStorage[emailPhone] || otpStorage[emailPhone] !== otp) {
@@ -124,6 +147,11 @@ app.post('/verify-otp', (req, res) => {
     res.json({ success: true, message: "✅ OTP verified successfully!" });
 });
 
-// ✅ Start Server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+// ✅ Start Server (only when run directly via node server.js)
+if (require.main === module) {
+    const PORT = process.env.PORT || 5000;
+    app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+}
+
+// ✅ Export Express app for Vercel Serverless Function
+module.exports = app;

@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SmartEval – Online Examination & Evaluation System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* RESET & BASE */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background-color: #f7f7fb;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    /* CONTAINER */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* SECTION TITLES */
+    .section-title {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .section-title h2 {
+      font-size: 2.2rem;
+      font-weight: 600;
+      color: #2b2c34;
+      margin-bottom: 12px;
+      position: relative;
+      display: inline-block;
+    }
+
+    .section-title h2::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 4px;
+      background: linear-gradient(135deg, #7f5af0, #6246ea);
+      border-radius: 2px;
+    }
+
+    .section-title p {
+      color: #666;
+      font-size: 1rem;
+      max-width: 640px;
+      margin: 16px auto 0;
+    }
+
+    /* NAVBAR */
+    .navbar {
+      background: #ffffff;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .nav-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 72px;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #6246ea;
+    }
+
+    .nav-brand span {
+      color: #ff7300;
+    }
+
+    .nav-menu {
+      display: flex;
+      align-items: center;
+      list-style: none;
+      gap: 28px;
+    }
+
+    .nav-link {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: #444;
+      transition: color 0.25s ease;
+    }
+
+    .nav-link:hover {
+      color: #6246ea;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 10px 22px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.25s ease;
+      border: none;
+    }
+
+    .btn-login {
+      background: transparent;
+      color: #6246ea;
+      border: 2px solid #6246ea;
+    }
+
+    .btn-login:hover {
+      background: #6246ea;
+      color: #ffffff;
+    }
+
+    .btn-signup {
+      background: #ff7300;
+      color: #ffffff;
+      box-shadow: 0 4px 10px rgba(255, 115, 0, 0.25);
+    }
+
+    .btn-signup:hover {
+      background: #e65c00;
+    }
+
+    /* MOBILE TOGGLE */
+    .mobile-toggle {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 1.6rem;
+      color: #333;
+      cursor: pointer;
+    }
+
+    /* HERO SECTION */
+    .hero {
+      background: linear-gradient(135deg, #7f5af0, #6246ea);
+      color: #ffffff;
+      padding: 90px 0 100px;
+      position: relative;
+    }
+
+    .hero-content {
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.18);
+      padding: 6px 16px;
+      border-radius: 30px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      margin-bottom: 20px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .hero h1 {
+      font-size: 3rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      line-height: 1.2;
+    }
+
+    .hero h2 {
+      font-size: 1.35rem;
+      font-weight: 400;
+      opacity: 0.95;
+      margin-bottom: 22px;
+    }
+
+    .hero-desc {
+      font-size: 1.1rem;
+      opacity: 0.9;
+      line-height: 1.7;
+      margin-bottom: 32px;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .hero-highlights {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 36px;
+    }
+
+    .hero-pill {
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      padding: 8px 18px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .hero-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .btn-hero-primary {
+      background: #ff7300;
+      color: #ffffff;
+      padding: 13px 30px;
+      font-size: 1.05rem;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-hero-primary:hover {
+      background: #e65c00;
+      transform: translateY(-2px);
+    }
+
+    .btn-hero-secondary {
+      background: rgba(255, 255, 255, 0.15);
+      color: #ffffff;
+      border: 2px solid rgba(255, 255, 255, 0.7);
+      padding: 13px 30px;
+      font-size: 1.05rem;
+    }
+
+    .btn-hero-secondary:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+    }
+
+    /* ABOUT SECTION */
+    .about-section {
+      padding: 80px 0;
+      background: #ffffff;
+    }
+
+    .about-card {
+      background: #f7f7fb;
+      border-radius: 12px;
+      padding: 40px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      border-left: 6px solid #6246ea;
+      margin-bottom: 40px;
+    }
+
+    .about-card p {
+      font-size: 1.05rem;
+      color: #444;
+      line-height: 1.8;
+      margin-bottom: 16px;
+    }
+
+    .workflow-container {
+      margin-top: 36px;
+    }
+
+    .workflow-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #2b2c34;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+
+    .workflow-steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+
+    .workflow-step {
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      border: 1px solid #e8e8ef;
+      text-align: center;
+      position: relative;
+    }
+
+    .step-number {
+      display: inline-block;
+      width: 36px;
+      height: 36px;
+      line-height: 36px;
+      background: linear-gradient(135deg, #7f5af0, #6246ea);
+      color: #ffffff;
+      border-radius: 50%;
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-bottom: 12px;
+    }
+
+    .workflow-step h4 {
+      font-size: 1rem;
+      color: #333;
+      margin-bottom: 6px;
+    }
+
+    .workflow-step p {
+      font-size: 0.85rem;
+      color: #666;
+    }
+
+    /* FEATURES SECTION */
+    .features-section {
+      padding: 80px 0;
+      background: #f7f7fb;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 28px;
+    }
+
+    .feature-card {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 32px 28px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      border: 1px solid #e8e8ef;
+      border-top: 4px solid #6246ea;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    }
+
+    .feature-icon {
+      font-size: 2rem;
+      margin-bottom: 16px;
+      display: inline-block;
+    }
+
+    .feature-card h3 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #2b2c34;
+      margin-bottom: 10px;
+    }
+
+    .feature-card p {
+      font-size: 0.95rem;
+      color: #666;
+      line-height: 1.6;
+    }
+
+    /* HOW IT WORKS SECTION */
+    .how-it-works-section {
+      padding: 80px 0;
+      background: #ffffff;
+    }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 24px;
+    }
+
+    .process-card {
+      background: #f7f7fb;
+      border-radius: 12px;
+      padding: 30px 24px;
+      text-align: center;
+      border: 1px solid #e8e8ef;
+      position: relative;
+      transition: transform 0.25s ease;
+    }
+
+    .process-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .process-tag {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #6246ea;
+      margin-bottom: 14px;
+    }
+
+    .process-card h3 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    .process-card p {
+      font-size: 0.9rem;
+      color: #666;
+      line-height: 1.6;
+    }
+
+    /* ROLES SECTION */
+    .roles-section {
+      padding: 80px 0;
+      background: #f7f7fb;
+    }
+
+    .roles-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 28px;
+    }
+
+    .role-card {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 34px 28px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      border: 1px solid #e8e8ef;
+      border-left: 5px solid #ff7300;
+      transition: transform 0.25s ease;
+    }
+
+    .role-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .role-badge {
+      display: inline-block;
+      background: rgba(127, 90, 240, 0.12);
+      color: #6246ea;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+      letter-spacing: 0.5px;
+    }
+
+    .role-card h3 {
+      font-size: 1.35rem;
+      font-weight: 600;
+      color: #2b2c34;
+      margin-bottom: 16px;
+    }
+
+    .role-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .role-list li {
+      position: relative;
+      padding-left: 24px;
+      margin-bottom: 10px;
+      font-size: 0.95rem;
+      color: #555;
+    }
+
+    .role-list li::before {
+      content: '✔';
+      position: absolute;
+      left: 0;
+      color: #28a745;
+      font-weight: 700;
+    }
+
+    /* ABOUT US SECTION */
+    .about-us-section {
+      padding: 80px 0;
+      background: #ffffff;
+    }
+
+    .academic-note {
+      background: #f7f7fb;
+      border-radius: 12px;
+      padding: 36px 32px;
+      border-left: 5px solid #3f37c9;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .academic-note h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #3f37c9;
+      margin-bottom: 14px;
+    }
+
+    .academic-note p {
+      font-size: 1rem;
+      color: #444;
+      line-height: 1.8;
+      margin-bottom: 12px;
+    }
+
+    /* CONTACT SECTION */
+    .contact-section {
+      padding: 80px 0;
+      background: #f7f7fb;
+    }
+
+    .contact-wrapper {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: start;
+    }
+
+    .contact-info {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 36px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      border: 1px solid #e8e8ef;
+    }
+
+    .contact-info h3 {
+      font-size: 1.3rem;
+      color: #2b2c34;
+      margin-bottom: 14px;
+      font-weight: 600;
+    }
+
+    .contact-info p {
+      font-size: 0.95rem;
+      color: #666;
+      line-height: 1.7;
+      margin-bottom: 24px;
+    }
+
+    .contact-detail {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      font-size: 0.95rem;
+      color: #444;
+    }
+
+    .contact-icon {
+      font-size: 1.2rem;
+    }
+
+    .contact-form-box {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 36px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      border: 1px solid #e8e8ef;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #444;
+      margin-bottom: 6px;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 12px 14px;
+      font-size: 0.95rem;
+      border: 1px solid #dcdce6;
+      border-radius: 8px;
+      background: #fcfcff;
+      color: #333;
+      outline: none;
+      transition: border-color 0.25s ease;
+    }
+
+    .form-control:focus {
+      border-color: #6246ea;
+      background: #ffffff;
+    }
+
+    textarea.form-control {
+      resize: vertical;
+      min-height: 110px;
+    }
+
+    .btn-submit {
+      width: 100%;
+      background: #ff7300;
+      color: #ffffff;
+      padding: 13px;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      transition: background 0.25s ease;
+    }
+
+    .btn-submit:hover {
+      background: #e65c00;
+    }
+
+    .form-status {
+      margin-top: 14px;
+      font-size: 0.9rem;
+      text-align: center;
+      display: none;
+    }
+
+    /* FOOTER */
+    .footer {
+      background: #1e1e24;
+      color: #ffffff;
+      padding: 60px 0 30px;
+    }
+
+    .footer-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 24px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      padding-bottom: 30px;
+      margin-bottom: 30px;
+    }
+
+    .footer-brand h3 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 6px;
+    }
+
+    .footer-brand h3 span {
+      color: #ff7300;
+    }
+
+    .footer-brand p {
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      list-style: none;
+    }
+
+    .footer-links a {
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.8);
+      transition: color 0.25s ease;
+    }
+
+    .footer-links a:hover {
+      color: #ff7300;
+    }
+
+    .footer-bottom {
+      text-align: center;
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    /* RESPONSIVE STYLES */
+    @media (max-width: 992px) {
+      .hero h1 {
+        font-size: 2.5rem;
+      }
+      .contact-wrapper {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .mobile-toggle {
+        display: block;
+      }
+
+      .nav-menu {
+        position: absolute;
+        top: 72px;
+        left: 0;
+        right: 0;
+        background: #ffffff;
+        flex-direction: column;
+        padding: 24px;
+        gap: 16px;
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+        display: none;
+      }
+
+      .nav-menu.active {
+        display: flex;
+      }
+
+      .nav-actions {
+        display: none;
+      }
+
+      .nav-menu .mobile-actions {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        gap: 10px;
+        margin-top: 10px;
+        border-top: 1px solid #eee;
+        padding-top: 16px;
+      }
+
+      .hero {
+        padding: 60px 0 70px;
+      }
+
+      .hero h1 {
+        font-size: 2.1rem;
+      }
+
+      .hero h2 {
+        font-size: 1.15rem;
+      }
+
+      .hero-desc {
+        font-size: 1rem;
+      }
+
+      .features-grid, .roles-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .footer-top {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .footer-links {
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- SECTION 1: NAVBAR -->
+  <nav class="navbar">
+    <div class="container nav-container">
+      <a href="index.html" class="nav-brand">Smart<span>Eval</span></a>
+
+      <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle navigation">☰</button>
+
+      <ul class="nav-menu" id="navMenu">
+        <li><a href="index.html" class="nav-link">Home</a></li>
+        <li><a href="#about" class="nav-link">About</a></li>
+        <li><a href="#features" class="nav-link">Features</a></li>
+        <li><a href="#how-it-works" class="nav-link">How It Works</a></li>
+        <li><a href="#contact" class="nav-link">Contact</a></li>
+
+        <li class="mobile-actions" style="display: none;">
+          <a href="login.html" class="btn btn-login">Login</a>
+          <a href="signup.html" class="btn btn-signup">Sign Up</a>
+        </li>
+      </ul>
+
+      <div class="nav-actions">
+        <a href="login.html" class="btn btn-login">Login</a>
+        <a href="signup.html" class="btn btn-signup">Sign Up</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- SECTION 2: HERO -->
+  <header class="hero">
+    <div class="container hero-content">
+      <span class="hero-badge">Academic Examination Platform</span>
+      <h1>SmartEval</h1>
+      <h2>Online Examination &amp; Evaluation System</h2>
+      <p class="hero-desc">
+        Conduct, manage, and participate in digital examinations through a simple and structured platform.
+      </p>
+
+      <div class="hero-highlights">
+        <span class="hero-pill">✔ Online Examinations</span>
+        <span class="hero-pill">✔ Student Participation</span>
+        <span class="hero-pill">✔ Exam Management</span>
+        <span class="hero-pill">✔ Digital Evaluation</span>
+        <span class="hero-pill">✔ Role-Based Access</span>
+      </div>
+
+      <div class="hero-buttons">
+        <a href="login.html" class="btn btn-hero-primary">Get Started</a>
+        <a href="#about" class="btn btn-hero-secondary">Learn More</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- SECTION 3: ABOUT SMART EVAL -->
+  <section class="about-section" id="about">
+    <div class="container">
+      <div class="section-title">
+        <h2>About SmartEval</h2>
+        <p>A web-based platform built to structure and streamline the online testing lifecycle.</p>
+      </div>
+
+      <div class="about-card">
+        <p>
+          <strong>SmartEval</strong> is a web-based examination and evaluation platform designed to simplify the process of conducting and managing online examinations.
+        </p>
+        <p>
+          The system provides structured workflows for both instructors and learners, ensuring that tests are easily scheduled, attempted digitally, and securely recorded without complex manual overhead.
+        </p>
+
+        <div class="workflow-container">
+          <h3 class="workflow-title">Basic Examination Workflow</h3>
+          <div class="workflow-steps">
+            <div class="workflow-step">
+              <span class="step-number">1</span>
+              <h4>Create &amp; Manage</h4>
+              <p>Teacher or Admin defines examination details and questions.</p>
+            </div>
+            <div class="workflow-step">
+              <span class="step-number">2</span>
+              <h4>Schedule</h4>
+              <p>Test date, time, and timing constraints are finalized.</p>
+            </div>
+            <div class="workflow-step">
+              <span class="step-number">3</span>
+              <h4>Participate</h4>
+              <p>Students access and attempt the scheduled test digitally.</p>
+            </div>
+            <div class="workflow-step">
+              <span class="step-number">4</span>
+              <h4>Submit</h4>
+              <p>Responses are recorded directly in the platform.</p>
+            </div>
+            <div class="workflow-step">
+              <span class="step-number">5</span>
+              <h4>Evaluate</h4>
+              <p>Evaluation and results are handled through the system.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 4: FEATURES -->
+  <section class="features-section" id="features">
+    <div class="container">
+      <div class="section-title">
+        <h2>Core Features</h2>
+        <p>Essential tools designed for practical digital testing and evaluation.</p>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">📝</div>
+          <h3>1. Online Examinations</h3>
+          <p>Students can participate in examinations digitally with structured question presentation and timed sessions.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">⚙️</div>
+          <h3>2. Exam Management</h3>
+          <p>Teachers can create, schedule, and manage examination-related information and question sets.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">🎓</div>
+          <h3>3. Student Dashboard</h3>
+          <p>Students can access upcoming examinations, review past attempts, and monitor activities from their dedicated dashboard.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">👨‍🏫</div>
+          <h3>4. Teacher Dashboard</h3>
+          <p>Teachers can manage test questions, review submitted papers, and coordinate examination schedules effortlessly.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">🔐</div>
+          <h3>5. Role-Based Access</h3>
+          <p>Distinct portals and experiences tailored specifically for students, teachers, and administrators.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">📊</div>
+          <h3>6. Digital Evaluation</h3>
+          <p>The system supports a clean digital examination and evaluation workflow from test creation to submission review.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 5: HOW IT WORKS -->
+  <section class="how-it-works-section" id="how-it-works">
+    <div class="container">
+      <div class="section-title">
+        <h2>How It Works</h2>
+        <p>A simple 4-step process to conduct and participate in online examinations.</p>
+      </div>
+
+      <div class="steps-grid">
+        <div class="process-card">
+          <div class="process-tag">01</div>
+          <h3>Sign Up / Login</h3>
+          <p>Access SmartEval using your registered student or teacher account credentials.</p>
+        </div>
+
+        <div class="process-card">
+          <div class="process-tag">02</div>
+          <h3>Exam Management</h3>
+          <p>Teachers configure examination details, set questions, and schedule upcoming tests.</p>
+        </div>
+
+        <div class="process-card">
+          <div class="process-tag">03</div>
+          <h3>Attempt Examination</h3>
+          <p>Students access their dashboard and participate in available examinations.</p>
+        </div>
+
+        <div class="process-card">
+          <div class="process-tag">04</div>
+          <h3>Evaluation &amp; Results</h3>
+          <p>Responses and evaluation are recorded and managed through the system.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 6: WHO CAN USE SMART EVAL -->
+  <section class="roles-section" id="roles">
+    <div class="container">
+      <div class="section-title">
+        <h2>Who Can Use SmartEval</h2>
+        <p>Tailored interfaces designed for distinct academic roles.</p>
+      </div>
+
+      <div class="roles-grid">
+        <div class="role-card">
+          <span class="role-badge">For Learners</span>
+          <h3>STUDENT</h3>
+          <ul class="role-list">
+            <li>Access scheduled examinations</li>
+            <li>Participate in timed online exams</li>
+            <li>View relevant academic information</li>
+          </ul>
+        </div>
+
+        <div class="role-card">
+          <span class="role-badge">For Instructors</span>
+          <h3>TEACHER</h3>
+          <ul class="role-list">
+            <li>Manage examination questions</li>
+            <li>Set and schedule examination details</li>
+            <li>Manage student evaluation workflow</li>
+          </ul>
+        </div>
+
+        <div class="role-card">
+          <span class="role-badge">For Coordinators</span>
+          <h3>ADMIN</h3>
+          <ul class="role-list">
+            <li>Manage the overall platform</li>
+            <li>Handle administrative functions</li>
+            <li>Maintain institutional oversight</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 7: ABOUT US -->
+  <section class="about-us-section" id="about-us">
+    <div class="container">
+      <div class="section-title">
+        <h2>About The Project</h2>
+        <p>Academic context and background of SmartEval.</p>
+      </div>
+
+      <div class="academic-note">
+        <h3>Academic Project Objective</h3>
+        <p>
+          SmartEval is developed as an academic and project-based online examination and evaluation system with the objective of understanding and implementing the complete digital examination workflow.
+        </p>
+        <p>
+          The project focuses on creating an intuitive, role-segregated environment where digital assessments can be structured, attempted, and managed efficiently using standard web technologies.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 8: CONTACT US -->
+  <section class="contact-section" id="contact">
+    <div class="container">
+      <div class="section-title">
+        <h2>Contact Us</h2>
+        <p>Reach out to the project team with inquiries, suggestions, or feedback.</p>
+      </div>
+
+      <div class="contact-wrapper">
+        <div class="contact-info">
+          <h3>Get In Touch</h3>
+          <p>
+            Have questions about SmartEval or want to learn more about this project? You can contact us through the project team.
+          </p>
+
+          <div class="contact-detail">
+            <span class="contact-icon">📧</span>
+            <span>Contact us through the project team.</span>
+          </div>
+          <div class="contact-detail">
+            <span class="contact-icon">🏫</span>
+            <span>Academic Examination &amp; Evaluation Project</span>
+          </div>
+          <div class="contact-detail">
+            <span class="contact-icon">🌐</span>
+            <span>Web-Based Examination System</span>
+          </div>
+        </div>
+
+        <div class="contact-form-box">
+          <form id="contactForm" onsubmit="handleContactSubmit(event)">
+            <div class="form-group">
+              <label for="contactName">Your Name</label>
+              <input type="text" id="contactName" class="form-control" placeholder="Enter your full name" required>
+            </div>
+
+            <div class="form-group">
+              <label for="contactEmail">Email Address</label>
+              <input type="email" id="contactEmail" class="form-control" placeholder="Enter your email" required>
+            </div>
+
+            <div class="form-group">
+              <label for="contactSubject">Subject</label>
+              <input type="text" id="contactSubject" class="form-control" placeholder="Inquiry subject" required>
+            </div>
+
+            <div class="form-group">
+              <label for="contactMessage">Message</label>
+              <textarea id="contactMessage" class="form-control" placeholder="Write your message..." required></textarea>
+            </div>
+
+            <button type="submit" class="btn-submit">Send Message</button>
+            <p id="contactStatus" class="form-status"></p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 9: FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <h3>Smart<span>Eval</span></h3>
+          <p>Online Examination &amp; Evaluation System</p>
+        </div>
+
+        <ul class="footer-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#how-it-works">How It Works</a></li>
+          <li><a href="#contact">Contact</a></li>
+          <li><a href="login.html">Login</a></li>
+          <li><a href="signup.html">Sign Up</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; 2026 SmartEval – Academic Project. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Mobile navigation toggle
+    const mobileToggle = document.getElementById('mobileToggle');
+    const navMenu = document.getElementById('navMenu');
+
+    if (mobileToggle && navMenu) {
+      mobileToggle.addEventListener('click', () => {
+        navMenu.classList.toggle('active');
+        const mobileActions = navMenu.querySelector('.mobile-actions');
+        if (mobileActions) {
+          mobileActions.style.display = navMenu.classList.contains('active') ? 'flex' : 'none';
+        }
+      });
+
+      // Close mobile menu when clicking any nav link
+      document.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', () => {
+          navMenu.classList.remove('active');
+          const mobileActions = navMenu.querySelector('.mobile-actions');
+          if (mobileActions) mobileActions.style.display = 'none';
+        });
+      });
+    }
+
+    // Client-side contact form handler
+    function handleContactSubmit(event) {
+      event.preventDefault();
+      const statusEl = document.getElementById('contactStatus');
+      const form = document.getElementById('contactForm');
+      
+      statusEl.style.display = 'block';
+      statusEl.style.color = '#28a745';
+      statusEl.textContent = '✅ Thank you! Your message has been received by the project team.';
+      
+      form.reset();
+      setTimeout(() => {
+        statusEl.style.display = 'none';
+      }, 5000);
+    }
+  </script>
+</body>
+</html>
